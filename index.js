@@ -48,7 +48,7 @@ const authenticate = async (req, res, next) => {
 
 
 
-app.get('/v3/marketplace/fetch', async (req, res) => {
+app.get('/.netlify/functions/server/v3/marketplace/fetch', async (req, res) => {
     const { limit = 10, page = 1, sort } = req.query;
     const offset = (page - 1) * limit;
     const sortBy = sort || 'created_at';
@@ -72,7 +72,7 @@ app.get('/v3/marketplace/fetch', async (req, res) => {
     });
 });
 
-app.post('/v3/marketplace/insert', authenticate, async (req, res) => {
+app.post('/.netlify/functions/server/v3/marketplace/insert', authenticate, async (req, res) => {
     const { data, error } = await supabase
         .from('marketplace')
         .insert([req.body]);
@@ -84,6 +84,4 @@ app.post('/v3/marketplace/insert', authenticate, async (req, res) => {
     return res.status(201).json({ message: 'Data inserted successfully'});
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+module.exports = app;
