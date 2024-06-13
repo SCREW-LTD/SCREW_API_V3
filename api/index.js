@@ -72,15 +72,66 @@ app.get('/v3/marketplace/fetch', async (req, res) => {
 
 app.post('/v3/marketplace/insert', authenticate, async (req, res) => {
     const { user } = req;
+    const { type, name, description, image, projectData } = req.body;
+
+    const newData = {
+        type,
+        name,
+        description,
+        image,
+        projectData,
+        downloads: 0,
+        owner: user.id
+    };
+
     const { data, error } = await supabase
         .from('marketplace')
-        .insert([{ ...req.body, owner: user.id }]);
+        .insert([newData]);
 
     if (error) {
         return res.status(500).json({ error: error.message });
     }
 
-    return res.status(201).json({ message: 'Data inserted successfully'});
+    return res.status(201).json({ message: 'Data inserted successfully' });
+});
+
+app.post('/v3/marketplace/download', authenticate, async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: 'ID is required' });
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('marketplace')
+            .select('downloads')
+            .eq('id', id)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        const currentDownloads = data.downloads;
+
+        const { data: updatedData, error: updateError } = await supabase
+            .from('marketplace')
+            .update({ downloads: currentDownloads + 1 })
+            .eq('id', id);
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        return res.status(200).json({ message: 'Downloads incremented successfully', data: updatedData });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
 });
 
 app.listen(port, () => {
