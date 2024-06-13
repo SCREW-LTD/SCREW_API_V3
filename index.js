@@ -1,9 +1,9 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
-const serverless = require('serverless-http');
+
 const app = express();
-const router = express.Router();
+const port = 3000;
 
 app.use(express.json());
 
@@ -48,7 +48,7 @@ const authenticate = async (req, res, next) => {
 
 
 
-router.get('/v3/marketplace/fetch', async (req, res) => {
+app.get('/v3/marketplace/fetch', async (req, res) => {
     const { limit = 10, page = 1, sort } = req.query;
     const offset = (page - 1) * limit;
     const sortBy = sort || 'created_at';
@@ -72,7 +72,7 @@ router.get('/v3/marketplace/fetch', async (req, res) => {
     });
 });
 
-router.post('/v3/marketplace/insert', authenticate, async (req, res) => {
+app.post('/v3/marketplace/insert', authenticate, async (req, res) => {
     const { data, error } = await supabase
         .from('marketplace')
         .insert([req.body]);
@@ -84,5 +84,6 @@ router.post('/v3/marketplace/insert', authenticate, async (req, res) => {
     return res.status(201).json({ message: 'Data inserted successfully'});
 });
 
-app.use('/.netlify/functions/api', router);
-module.exports.handler = serverless(app);
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});

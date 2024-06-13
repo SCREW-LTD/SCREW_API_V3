@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "npm install"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
@@ -14,9 +13,6 @@
     "@supabase/supabase-js": "^2.43.4",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "netlify-cli": "^17.26.3",
-    "netlify-lambda": "^2.0.16",
-    "serverless-http": "^3.2.0"
+    "express": "^4.19.2"
   }
 }
