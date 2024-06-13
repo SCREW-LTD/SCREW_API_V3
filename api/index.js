@@ -46,8 +46,6 @@ const authenticate = async (req, res, next) => {
     }
 };
 
-
-
 app.get('/v3/marketplace/fetch', async (req, res) => {
     const { limit = 10, page = 1, sort } = req.query;
     const offset = (page - 1) * limit;
@@ -73,9 +71,10 @@ app.get('/v3/marketplace/fetch', async (req, res) => {
 });
 
 app.post('/v3/marketplace/insert', authenticate, async (req, res) => {
+    const { user } = req;
     const { data, error } = await supabase
         .from('marketplace')
-        .insert([req.body]);
+        .insert([{ ...req.body, owner: user.id }]);
 
     if (error) {
         return res.status(500).json({ error: error.message });
