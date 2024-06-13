@@ -7,7 +7,7 @@ const port = 3000;
 
 app.use(express.json());
 
-const supabase = createClient(process.env.URL, process.env.API_KEY);
+const supabase = createClient(process.env.API_URL, process.env.API_KEY);
 
 const axios = require('axios');
 
