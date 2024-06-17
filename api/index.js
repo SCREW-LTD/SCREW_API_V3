@@ -46,6 +46,10 @@ const authenticate = async (req, res, next) => {
     }
 };
 
+app.get('/', (req, res) => {
+  res.status(200).json({ SCREWAPI: "v3.0.0", status: 'ok' });
+});
+
 app.get('/v3/marketplace/fetch', async (req, res) => {
     const { limit = 10, page = 1, sort } = req.query;
     const offset = (page - 1) * limit;
