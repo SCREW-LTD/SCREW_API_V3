@@ -5,7 +5,22 @@ const cors = require('cors');
 
 const app = express();
 const port = 3000;
-app.use(cors());
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        const allowedDomain = /\.screwltd\.com$/;
+        if (allowedDomain.test(origin) || origin === 'https://screwltd.com') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const supabase = createClient(process.env.API_URL, process.env.API_KEY);
