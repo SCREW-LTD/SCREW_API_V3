@@ -9,15 +9,17 @@ const port = 3000;
 const corsOptions = {
     origin: function (origin, callback) {
         if (!origin) return callback(null, true);
-        const allowedDomain = /\.screwltd\.com$/;
-        if (allowedDomain.test(origin) || origin === 'https://screwltd.com') {
+
+        const allowedOriginPattern = /\.?screwltd\.com$/;
+        if (allowedOriginPattern.test(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
         }
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+    credentials: true 
 };
 
 app.use(cors(corsOptions));
@@ -66,30 +68,24 @@ app.get('/', (req, res) => {
     res.status(200).json({ SCREWAPI: "v3.0.0", status: 'ok' });
 });
 
-const downloadUrls = {
-    win32_exe: 'https://screwltd.com/editor/editor-2024.6.20-win32.exe',
-    win64_exe: 'https://screwltd.com/editor/editor-2024.6.20-win64.exe',
-    arm_exe: 'https://screwltd.com/editor/editor-2024.6.20-arm64.exe',
-    arm_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-arm64.zip',
-    win64_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-win64.zip'
-};
-
 app.get('/v3/editor/download', (req, res) => {
+    const downloadUrls = {
+        win32_exe: 'https://screwltd.com/editor/editor-2024.6.20-win32.exe',
+        win64_exe: 'https://screwltd.com/editor/editor-2024.6.20-win64.exe',
+        arm_exe: 'https://screwltd.com/editor/editor-2024.6.20-arm64.exe',
+        arm_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-arm64.zip',
+        win64_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-win64.zip'
+    };
+
     const { win32_exe, win64_exe, arm_exe, arm_zip, win64_zip } = req.query;
 
     let downloadLink = null;
 
-    if (win32_exe) {
-        downloadLink = downloadUrls.win32_exe;
-    } else if (win64_exe) {
-        downloadLink = downloadUrls.win64_exe;
-    } else if (arm_exe) {
-        downloadLink = downloadUrls.arm_exe;
-    } else if (arm_zip) {
-        downloadLink = downloadUrls.arm_zip;
-    } else if (win64_zip) {
-        downloadLink = downloadUrls.win64_zip;
-    }
+    if (win32_exe) downloadLink = downloadUrls.win32_exe;
+    else if (win64_exe) downloadLink = downloadUrls.win64_exe;
+    else if (arm_exe) downloadLink = downloadUrls.arm_exe;
+    else if (arm_zip) downloadLink = downloadUrls.arm_zip;
+    else if (win64_zip) downloadLink = downloadUrls.win64_zip;
 
     if (downloadLink) {
         res.status(200).json({ url: downloadLink });
@@ -185,6 +181,8 @@ app.post('/v3/marketplace/download', authenticate, async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 });
+
+app.options('*', cors(corsOptions));
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
