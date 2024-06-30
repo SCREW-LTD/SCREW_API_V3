@@ -70,19 +70,19 @@ app.get('/', (req, res) => {
 
 app.get('/v3/editor/download', (req, res) => {
     const downloadUrls = {
-        win32_exe: 'https://screwltd.com/editor/editor-2024.6.20-win32.exe',
-        win64_exe: 'https://screwltd.com/editor/editor-2024.6.20-win64.exe',
+        win32: 'https://screwltd.com/editor/editor-2024.6.20-win32.exe',
+        win64: 'https://screwltd.com/editor/editor-2024.6.20-win64.exe',
         arm_exe: 'https://screwltd.com/editor/editor-2024.6.20-arm64.exe',
         arm_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-arm64.zip',
         win64_zip: 'https://screwltd.com/editor/editor-2024.6.20-embed-win64.zip'
     };
 
-    const { win32_exe, win64_exe, arm_exe, arm_zip, win64_zip } = req.query;
+    const { win32, win64, arm_exe, arm_zip, win64_zip } = req.query;
 
     let downloadLink = null;
 
-    if (win32_exe) downloadLink = downloadUrls.win32_exe;
-    else if (win64_exe) downloadLink = downloadUrls.win64_exe;
+    if (win32) downloadLink = downloadUrls.win32;
+    else if (win64) downloadLink = downloadUrls.win64;
     else if (arm_exe) downloadLink = downloadUrls.arm_exe;
     else if (arm_zip) downloadLink = downloadUrls.arm_zip;
     else if (win64_zip) downloadLink = downloadUrls.win64_zip;
