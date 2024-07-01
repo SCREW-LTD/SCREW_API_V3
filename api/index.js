@@ -182,6 +182,31 @@ app.post('/v3/marketplace/download', authenticate, async (req, res) => {
     }
 });
 
+app.post('/v3/xsolla/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const response = await axios.post(
+        'https://login.xsolla.com/api/login?projectId=41fc3f33-4047-44a9-8868-476848f9d438',
+        { username: email, password: password }
+      );
+      res.json(response.data);
+    } catch (error) {
+      res.status(error.response?.status || 500).json({ error: error.message });
+    }
+  });
+  
+  app.get('/v3/xsolla/user', async (req, res) => {
+    try {
+      const token = req.headers.authorization;
+      const response = await axios.get('https://login.xsolla.com/api/users/me', {
+        headers: { Authorization: token },
+      });
+      res.json(response.data);
+    } catch (error) {
+      res.status(error.response?.status || 500).json({ error: error.message });
+    }
+  });
+
 app.options('*', cors(corsOptions));
 
 app.listen(port, () => {
