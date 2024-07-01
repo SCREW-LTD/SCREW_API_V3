@@ -19,14 +19,13 @@ const corsOptions = {
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-    credentials: true 
+    credentials: true
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
 const supabase = createClient(process.env.API_URL, process.env.API_KEY);
-
 const axios = require('axios');
 
 const authenticate = async (req, res, next) => {
@@ -65,7 +64,7 @@ const authenticate = async (req, res, next) => {
 };
 
 app.get('/', (req, res) => {
-    res.status(200).json({ SCREWAPI: "v3.0.0", status: 'ok' });
+    res.status(200).json({ SCREWAPI: "v3.0.4", status: 'ok' });
 });
 
 app.get('/v3/editor/download', (req, res) => {
@@ -184,28 +183,29 @@ app.post('/v3/marketplace/download', authenticate, async (req, res) => {
 
 app.post('/v3/xsolla/login', async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const response = await axios.post(
-        'https://login.xsolla.com/api/login?projectId=41fc3f33-4047-44a9-8868-476848f9d438',
-        { username: email, password: password }
-      );
-      res.json(response.data);
+        const { email, password } = req.body;
+        const response = await axios.post(
+            'https://login.xsolla.com/api/login?projectId=41fc3f33-4047-44a9-8868-476848f9d438',
+            { username: email, password: password }
+        );
+        res.json(response.data);
     } catch (error) {
-      res.status(error.response?.status || 500).json({ error: error.message });
+        console.error('Xsolla API Error:', error.response?.data);
+        res.status(error.response?.status || 500).json({ error: error.message });
     }
-  });
-  
-  app.get('/v3/xsolla/user', async (req, res) => {
+});
+
+app.get('/v3/xsolla/user', async (req, res) => {
     try {
-      const token = req.headers.authorization;
-      const response = await axios.get('https://login.xsolla.com/api/users/me', {
-        headers: { Authorization: token },
-      });
-      res.json(response.data);
+        const token = req.headers.authorization;
+        const response = await axios.get('https://login.xsolla.com/api/users/me', {
+            headers: { Authorization: token },
+        });
+        res.json(response.data);
     } catch (error) {
-      res.status(error.response?.status || 500).json({ error: error.message });
+        res.status(error.response?.status || 500).json({ error: error.message });
     }
-  });
+});
 
 app.options('*', cors(corsOptions));
 
